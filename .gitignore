@@ -1,162 +1,149 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+import cv2
+import numpy as np
+import random
 
-# C extensions
-*.so
+# Function to generate initial population images using multiple rounds of encryption
+def generate_initial_population(original_biometric_image, num_images, num_rounds):
+    initial_population = []
+    for i in range(num_images):
+        encrypted_image = original_biometric_image.copy()
+        for _ in range(num_rounds):
+            random_key = random.randint(0, 255)
+            encrypted_image ^= random_key
+        initial_population.append(encrypted_image)
+        cv2.imwrite(f"encrypted_image_{i}.jpg", encrypted_image)
+    return initial_population
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+# Function to optimize GA parameters (crossover and mutation rates)
+def evaluate_accuracy(cancelable_template):
+    # Placeholder function to evaluate the accuracy of a cancelable template
+    # Compare the cancelable template with ground truth or validation data
+    # and return the accuracy
+    return random.uniform(0.6, 1.0)  # Placeholder implementation
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+def optimize_ga_parameters(initial_population):
+    crossover_rates = [0.6, 0.7, 0.8]  # Test different crossover rates
+    mutation_rates = [0.03, 0.05, 0.07]  # Test different mutation rates
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+    # Store accuracy for each combination of mutation and crossover rates
+    accuracy_scores = {}
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-cover/
+    # Define population size and number of generations
+    population_size = 100
+    num_generations = 50
 
-# Translations
-*.mo
-*.pot
+    # Run experiments and evaluate the performance of cancelable templates for each combination of rates
+    for crossover_rate in crossover_rates:
+        for mutation_rate in mutation_rates:
+            print(f"Testing with crossover rate: {crossover_rate}, mutation rate: {mutation_rate}")
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
+            # Initialize the population
+            population = initial_population[:population_size]
 
-# Flask stuff:
-instance/
-.webassets-cache
+            # Evaluate the initial population
+            fitness_scores = evaluate_population(population)
 
-# Scrapy stuff:
-.scrapy
+            # Perform GA iterations
+            for generation in range(num_generations):
+                # Select parents for reproduction
+                parents = select_parents(population, fitness_scores)
 
-# Sphinx documentation
-docs/_build/
+                # Create offspring through crossover and mutation
+                offspring = crossover_and_mutate(parents, crossover_rate, mutation_rate)
 
-# PyBuilder
-.pybuilder/
-target/
+                # Evaluate the offspring
+                offspring_fitness = evaluate_population(offspring)
 
-# Jupyter Notebook
-.ipynb_checkpoints
+                # Combine the offspring and parents, and select the fittest individuals for the next generation
+                population, fitness_scores = next_generation(population, offspring, fitness_scores, offspring_fitness)
 
-# IPython
-profile_default/
-ipython_config.py
+            # Evaluate the final population and store the best cancelable template
+            best_template, best_fitness = max(zip(population, fitness_scores), key=lambda x: x[1])
+            accuracy = evaluate_accuracy(best_template)
+            accuracy_scores[(crossover_rate, mutation_rate)] = accuracy
+            print(f"Best accuracy: {accuracy}")
 
-# pyenv
-#   For a library or package, you might want to ignore these files since the code is
-#   intended to run in multiple environments; otherwise, check them in:
-# .python-version
+    return accuracy_scores
 
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
+# Main function
 
-# poetry
-#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
-#   This is especially recommended for binary packages to ensure reproducibility, and is more
-#   commonly ignored for libraries.
-#   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
-#poetry.lock
+# Helper functions for GA operations
 
-# pdm
-#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
-#pdm.lock
-#   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
-#   in version control.
-#   https://pdm.fming.dev/latest/usage/project/#working-with-version-control
-.pdm.toml
-.pdm-python
-.pdm-build/
+def evaluate_population(population):
+    # Evaluate the fitness of each cancelable template in the population
+    # (placeholder implementation)
+    fitness_scores = [random.uniform(0.5, 1.0) for _ in population]
+    return fitness_scores
 
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
-__pypackages__/
+def select_parents(population, fitness_scores):
+    # Select parent cancelable templates for reproduction based on fitness scores
+    # (placeholder implementation)
+    parents = random.choices(population, weights=fitness_scores, k=len(population) // 2)
+    return parents
 
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
+def crossover_and_mutate(parents, crossover_rate, mutation_rate):
+    # Perform crossover and mutation operations on the parent cancelable templates
+    # (placeholder implementation)
+    offspring = []
+    for i in range(0, len(parents), 2):
+        parent1, parent2 = parents[i], parents[i + 1]
+        if random.random() < crossover_rate:
+            child1, child2 = crossover(parent1, parent2)
+        else:
+            child1, child2 = parent1, parent2
+        offspring.append(mutate(child1, mutation_rate))
+        offspring.append(mutate(child2, mutation_rate))
+    return offspring
 
-# SageMath parsed files
-*.sage.py
+def crossover(parent1, parent2):
+    # Perform crossover operation on two parent cancelable templates
+    # (placeholder implementation)
+    crossover_point = random.randint(0, len(parent1) - 1)
+    child1 = np.concatenate((parent1[:crossover_point], parent2[crossover_point:]))
+    child2 = np.concatenate((parent2[:crossover_point], parent1[crossover_point:]))
+    return child1, child2
 
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+def mutate(individual, mutation_rate):
+    # Perform mutation operation on a cancelable template
+    # (placeholder implementation)
+    mutated = individual.copy()
+    for i in range(len(mutated)):
+        if random.random() < mutation_rate:
+            mutated[i] = random.randint(0, 255)
+    return mutated
 
-# Spyder project settings
-.spyderproject
-.spyproject
+def next_generation(population, offspring, fitness_scores, offspring_fitness):
+    # Combine the offspring and parents, and select the fittest individuals for the next generation
+    # (placeholder implementation)
+    combined_population = population + offspring
+    combined_fitness = fitness_scores + offspring_fitness
+    sorted_population = [x for _, x in sorted(zip(combined_fitness, combined_population), key=lambda pair: pair[0], reverse=True)]
+    return sorted_population[:len(population)], [1.0] * len(population)
 
-# Rope project settings
-.ropeproject
+# Main function
+def main():
+    # Load the original biometric image
+    original_biometric_image = cv2.imread('download.jpg')
 
-# mkdocs documentation
-/site
+    # Check if the image was loaded successfully
+    if original_biometric_image is None:
+        print("Error: Could not load the image.")
+        return
 
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
+    # Simplified initial population generation
+    num_rounds = 25  # Number of encryption rounds
+    num_images = 4  # Number of initial population images
+    initial_population = generate_initial_population(original_biometric_image, num_images, num_rounds)
 
-# Pyre type checker
-.pyre/
+    # Optimize GA parameters and get accuracy scores
+    accuracy_scores = optimize_ga_parameters(initial_population)
 
-# pytype static type analyzer
-.pytype/
+    # Print or use accuracy scores as needed
+    print("Accuracy Scores:")
+    for rates, accuracy in accuracy_scores.items():
+        print(f"Crossover Rate: {rates[0]}, Mutation Rate: {rates[1]} - Accuracy: {accuracy}")
 
-# Cython debug symbols
-cython_debug/
 
-# PyCharm
-#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#  and can be added to the global gitignore or merged into this file.  For a more nuclear
-#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#.idea/
+
+if __name__ == "__main__":
+    main()
